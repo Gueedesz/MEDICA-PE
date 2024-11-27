@@ -1,0 +1,32 @@
+#map {
+    height: 400px; /* Altura fixa para garantir exibição */
+    width: 100%;
+    margin: 20px 0;
+    position: relative;
+    z-index: 0; /* Adiciona prioridade de renderização */
+    background-color: #f0f0f0; /* Garante que o espaço seja visível */
+}
+
+
+/* Define o layout principal para evitar espaço em branco */
+html, body {
+    height: 100%; /* Preenche 100% da tela */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* Garante que o conteúdo principal expanda */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Footer sempre fixado na parte inferior */
+footer {
+    background-color: #343a40; /* Mesma cor da navbar */
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    margin-top: auto;
+}

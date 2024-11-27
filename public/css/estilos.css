@@ -1,0 +1,36 @@
+* {
+    margin: 0;
+    padding: 0;}
+
+ol{
+    padding-top: 40px;
+}
+
+h1{
+    align-content: center;
+}
+.texto{
+    color: #fafafa; 
+    background-color: rgb(24, 165, 141);
+    align-items: center; 
+    justify-content: center;
+    text-align: center;
+    padding: 50px;
+
+
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  
+  main {
+    flex: 1; /* Faz o conteúdo principal ocupar o espaço restante */
+  }
