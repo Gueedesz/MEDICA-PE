@@ -156,3 +156,46 @@ document.addEventListener('DOMContentLoaded', function () {
     return deg * (Math.PI / 180);
   }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  const helpButton = document.getElementById('help-button');
+  const helpPopup = document.getElementById('help-popup');
+
+  let hasScrolled = false; // Flag para verificar se o usuário já rolou
+
+  // Detecta o scroll e mostra o popup apenas na primeira rolagem
+  window.addEventListener('scroll', () => {
+    if (!hasScrolled) {
+      hasScrolled = true; // Evita que o popup apareça novamente após a primeira rolagem
+      showHelpPopup();
+    }
+  });
+
+  // Função para mostrar o popup
+  function showHelpPopup() {
+    helpPopup.style.display = 'block';
+
+    // Oculta o popup automaticamente após 3 segundos
+    setTimeout(() => {
+      helpPopup.style.display = 'none';
+    }, 5000);
+  }
+
+  // Alterna o estado do popup (manual)
+  function toggleHelpPopup() {
+    if (helpPopup.style.display === 'none' || !helpPopup.style.display) {
+      showHelpPopup();
+    } else {
+      helpPopup.style.display = 'none';
+    }
+  }
+
+    helpButton.addEventListener('click', () => {
+      window.location.href = '/ajuda';
+    })
+
+    helpPopup.addEventListener('click', () => {
+      window.location.href = '/ajuda';
+    })
+
+});
