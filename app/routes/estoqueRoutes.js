@@ -3,9 +3,9 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Comment = require('../models/commentModel');
 const Posto = require('../models/postoModel');
-const moment = require('moment-timezone'); // Biblioteca para manipulação de datas
+const moment = require('moment-timezone');
 moment.tz.setDefault('America/Sao_Paulo');
-moment.locale('pt-br'); // Configura o idioma para português
+moment.locale('pt-br');
 
 // Rota para filtrar comentários (pesquisa de remédios)
 router.post('/:postoId/pesquisar-remedio', async (req, res) => {
@@ -46,11 +46,16 @@ router.post('/:postoId/pesquisar-remedio', async (req, res) => {
 router.get('/:postoId', async (req, res) => {
   const { postoId } = req.params;
 
-  try {
-    if (!mongoose.Types.ObjectId.isValid(postoId)) {
-      throw new Error(`ID do Posto inválido: ${postoId}`);
-    }
+  if (postoId === 'comentar' || !mongoose.Types.ObjectId.isValid(postoId)) {
+    return res.render('estoque', {
+      title: 'Verificar Estoque',
+      posto: { name: 'Posto Desconhecido' },
+      comments: [],
+      errorMessage: 'ID do posto inválido. Por favor, selecione um posto válido.'
+    });
+  }
 
+  try {
     const posto = await Posto.findById(postoId);
     if (!posto) {
       throw new Error(`Posto ${postoId} não encontrado.`);
@@ -78,31 +83,31 @@ router.get('/:postoId', async (req, res) => {
   }
 });
 
-// Rota para a pagina de comentar
-
 // Rota para a página de comentar
 router.get('/:postoId/comentar', async (req, res) => {
   const { postoId } = req.params;
 
-  try {
-    if (!mongoose.Types.ObjectId.isValid(postoId)) {
-      throw new Error(`ID do Posto inválido: ${postoId}`);
-    }
+  if (postoId === 'comentar' || !mongoose.Types.ObjectId.isValid(postoId)) {
+    return res.render('comment', {
+      title: 'Adicionar Comentário',
+      posto: { name: 'Posto Desconhecido' },
+      comments: [],
+      errorMessage: 'ID do posto inválido. Por favor, selecione um posto válido.'
+    });
+  }
 
-    // Buscar posto pelo ID
+  try {
     const posto = await Posto.findById(postoId);
     if (!posto) {
       throw new Error(`Posto ${postoId} não encontrado.`);
     }
 
-    // Buscar e formatar os comentários associados ao posto
     const comments = await Comment.find({ postoId });
     const formattedComments = comments.map(comment => ({
       ...comment.toObject(),
       formattedDate: moment(comment.createdAt).format('DD/MM/YYYY HH:mm'),
     }));
 
-    // Renderizar a página de comentário
     res.render('comment', {
       title: 'Adicionar Comentário',
       posto,
@@ -119,53 +124,49 @@ router.get('/:postoId/comentar', async (req, res) => {
   }
 });
 
-
 // Rota para adicionar comentário
 router.post('/:postoId/add-comment', async (req, res) => {
   const { name, cpf, comment } = req.body;
   const { postoId } = req.params;
 
-  // Se o usuário estiver logado, vincular o comentário ao usuário autenticado
   const user = req.session.user;
 
-  // Verificar se o CPF é válido (se fornecido)
   if (!user && (!name || !cpf || !comment)) {
-      return res.status(400).send('Todos os campos são obrigatórios.');
+    return res.status(400).send('Todos os campos são obrigatórios.');
   }
 
   const sanitizedCPF = cpf ? cpf.replace(/[^\d]/g, '') : null;
 
   if (!user && !isValidCPF(sanitizedCPF)) {
-      return res.status(400).send('CPF inválido. Por favor, insira um CPF válido.');
+    return res.status(400).send('CPF inválido. Por favor, insira um CPF válido.');
   }
 
   try {
-      if (!mongoose.Types.ObjectId.isValid(postoId)) {
-          throw new Error(`ID do Posto inválido: ${postoId}`);
-      }
+    if (!mongoose.Types.ObjectId.isValid(postoId)) {
+      throw new Error(`ID do Posto inválido: ${postoId}`);
+    }
 
-      const newComment = new Comment({
-          name: user ? user.username : name,
-          cpf: user ? user.email : sanitizedCPF, // Usuário autenticado usa o email como identificação
-          comment,
-          postoId,
-          isAdmin: !!user // Se autenticado, marca como admin
-      });
+    const newComment = new Comment({
+      name: user ? user.username : name,
+      cpf: user ? user.email : sanitizedCPF,
+      comment,
+      postoId,
+      isAdmin: !!user
+    });
 
-      await newComment.save();
-      res.redirect(`/estoque/${postoId}`);
+    await newComment.save();
+    res.redirect(`/estoque/${postoId}`);
   } catch (error) {
-      console.error('Erro ao adicionar comentário:', error);
-      res.status(500).send('Erro ao adicionar comentário.');
+    console.error('Erro ao adicionar comentário:', error);
+    res.status(500).send('Erro ao adicionar comentário.');
   }
 });
 
-
 function isValidCPF(cpf) {
-  cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
+  cpf = cpf.replace(/[^\d]+/g, '');
 
   if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) {
-    return false; // Tamanho incorreto ou todos os dígitos iguais
+    return false;
   }
 
   let soma = 0;
@@ -184,7 +185,5 @@ function isValidCPF(cpf) {
 
   return digito1 === parseInt(cpf.charAt(9)) && digito2 === parseInt(cpf.charAt(10));
 }
-
-
 
 module.exports = router;
