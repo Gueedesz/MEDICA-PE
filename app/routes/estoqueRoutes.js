@@ -12,9 +12,18 @@ router.post('/:postoId/pesquisar-remedio', async (req, res) => {
   const { medicamento } = req.body;
   const { postoId } = req.params;
 
+  console.log(`Buscando posto com ID para pesquisar-remedio: ${postoId}`);
+
   try {
     if (!mongoose.Types.ObjectId.isValid(postoId)) {
+      console.log(`ID inválido: ${postoId}`);
       return res.status(400).send('ID do posto inválido.');
+    }
+
+    const posto = await Posto.findOne({ _id: postoId });
+    if (!posto) {
+      console.log(`Posto não encontrado para ID: ${postoId}`);
+      throw new Error(`Posto ${postoId} não encontrado.`);
     }
 
     const regex = new RegExp(medicamento, 'i');
@@ -27,8 +36,6 @@ router.post('/:postoId/pesquisar-remedio', async (req, res) => {
       ...comment.toObject(),
       formattedDate: moment(comment.createdAt).format('DD/MM/YYYY HH:mm'),
     }));
-
-    const posto = await Posto.findById(postoId);
 
     res.render('estoque', {
       title: 'Verificar Estoque',
@@ -46,7 +53,10 @@ router.post('/:postoId/pesquisar-remedio', async (req, res) => {
 router.get('/:postoId', async (req, res) => {
   const { postoId } = req.params;
 
-  if (postoId === 'comentar' || !mongoose.Types.ObjectId.isValid(postoId)) {
+  console.log(`Buscando posto com ID para página de estoque: ${postoId}`);
+
+  if (!mongoose.Types.ObjectId.isValid(postoId)) {
+    console.log(`ID inválido: ${postoId}`);
     return res.render('estoque', {
       title: 'Verificar Estoque',
       posto: { name: 'Posto Desconhecido' },
@@ -56,8 +66,9 @@ router.get('/:postoId', async (req, res) => {
   }
 
   try {
-    const posto = await Posto.findById(postoId);
+    const posto = await Posto.findOne({ _id: postoId });
     if (!posto) {
+      console.log(`Posto não encontrado para ID: ${postoId}`);
       throw new Error(`Posto ${postoId} não encontrado.`);
     }
 
@@ -87,7 +98,10 @@ router.get('/:postoId', async (req, res) => {
 router.get('/:postoId/comentar', async (req, res) => {
   const { postoId } = req.params;
 
-  if (postoId === 'comentar' || !mongoose.Types.ObjectId.isValid(postoId)) {
+  console.log(`Buscando posto com ID para página de comentar: ${postoId}`);
+
+  if (!mongoose.Types.ObjectId.isValid(postoId)) {
+    console.log(`ID inválido: ${postoId}`);
     return res.render('comment', {
       title: 'Adicionar Comentário',
       posto: { name: 'Posto Desconhecido' },
@@ -97,8 +111,9 @@ router.get('/:postoId/comentar', async (req, res) => {
   }
 
   try {
-    const posto = await Posto.findById(postoId);
+    const posto = await Posto.findOne({ _id: postoId });
     if (!posto) {
+      console.log(`Posto não encontrado para ID: ${postoId}`);
       throw new Error(`Posto ${postoId} não encontrado.`);
     }
 
@@ -129,6 +144,8 @@ router.post('/:postoId/add-comment', async (req, res) => {
   const { name, cpf, comment } = req.body;
   const { postoId } = req.params;
 
+  console.log(`Adicionando comentário para posto com ID: ${postoId}`);
+
   const user = req.session.user;
 
   if (!user && (!name || !cpf || !comment)) {
@@ -143,7 +160,14 @@ router.post('/:postoId/add-comment', async (req, res) => {
 
   try {
     if (!mongoose.Types.ObjectId.isValid(postoId)) {
+      console.log(`ID inválido: ${postoId}`);
       throw new Error(`ID do Posto inválido: ${postoId}`);
+    }
+
+    const posto = await Posto.findOne({ _id: postoId });
+    if (!posto) {
+      console.log(`Posto não encontrado para ID: ${postoId}`);
+      throw new Error(`Posto ${postoId} não encontrado.`);
     }
 
     const newComment = new Comment({
