@@ -1,23 +1,11 @@
 const mongoose = require('mongoose');
 
 const postoSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  lat: {
-    type: Number,
-    required: true,
-  },
-  lon: {
-    type: Number,
-    required: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-});
+  _id: { type: String, required: true }, // Especifica que _id é uma string
+  name: String,
+  lat: Number,
+  lon: Number,
+  address: String
+}, { _id: false }); // Desativa a criação automática de _id como ObjectId
 
-const Posto = mongoose.model('Posto', postoSchema);
-module.exports = Posto;
+module.exports = mongoose.model('Posto', postoSchema);
