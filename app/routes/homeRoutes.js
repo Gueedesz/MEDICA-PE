@@ -1,25 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const homeController = require('../controllers/homeController');
-const Posto = require('../models/Posto'); // Importar o modelo do Posto
+const Posto = require('../models/Posto');
 
 // Rota para a página inicial
 router.get('/', homeController.getHomePage);
 
 // Rota para obter todos os postos do banco de dados
 router.get('/api/postos', async (req, res) => {
-    try {
-      // Buscar apenas postos com lat e lon definidos e válidos
-      const postos = await Posto.find({
-        lat: { $type: "double" }, // Certifica que é um número
-        lon: { $type: "double" }
-      });
-      res.json(postos);
-    } catch (err) {
-      console.error('Erro ao buscar postos:', err);
-      res.status(500).send('Erro ao obter os postos.');
+  try {
+    const postos = await Posto.find({
+      lat: { $type: "double" },
+      lon: { $type: "double" }
+    });
+    if (!postos || postos.length === 0) {
+      return res.status(404).json({ message: 'Nenhum posto com coordenadas válidas encontrado.' });
     }
-  });
-  
+    res.json(postos);
+  } catch (err) {
+    console.error('Erro ao buscar postos:', err);
+    res.status(500).json({ message: 'Erro ao obter os postos.', error: err.message });
+  }
+});
 
 module.exports = router;
