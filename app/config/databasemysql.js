@@ -3,10 +3,10 @@ require('dotenv').config(); // Carrega variáveis do arquivo .env
 
 // Configuração da conexão com o banco de dados
 const mysqlConnection = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'sua-senha',
-    database: process.env.DB_NAME || 'medicape',
+    host: process.env.MYSQLHOST || 'localhost',
+    user: process.env.MYSQLUSER || 'root',
+    password: process.env.MYSQLPASSWORD || '',
+    database: process.env.MYSQL_DATABASE || 'medicape',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
