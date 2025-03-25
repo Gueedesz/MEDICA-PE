@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Comment = require('../models/commentModel');
-const Posto = require('../models/postoModel');
+const Posto = require('../models/Posto');
 const moment = require('moment-timezone');
 moment.tz.setDefault('America/Sao_Paulo');
 moment.locale('pt-br');
