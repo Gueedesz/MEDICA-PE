@@ -78,4 +78,3 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-Quero retirar o mongo e deixar apenas o sql, me ajude a ajustar: 
